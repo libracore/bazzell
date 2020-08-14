@@ -1,0 +1,39 @@
+{% extends "templates/web.html" %}
+{% block page_content %}
+<div class="row">
+<div class="col-xs-12">
+<button class="btn btn-sm btn-primary pull-right" style="margin-bottom: 20px;" onclick="order_now();">Order now</button>
+</div>
+</div>
+<table style="width: 100%;">
+    <tr style="vertical-align: top;">
+        <th>{{ _("Item Name") }}</th>
+        <th style="text-align: right;">{{ _("Price in ") }}{{ currency }}</th>
+        <th style="text-align: right;">{{ _("In Stock") }}</th>
+        <th style="width: 70px; text-align: right;">{{ _("Order") }}</th>
+        <th style="text-align: right;">{{ _("Total in ") }}{{ currency }}</th>
+    </tr>
+    <tbody id="product_table">
+        {% for item in items %}
+            <tr>
+                <td>{{ item.item_name }}</td>
+                <td style="text-align: right;">{{ "{:,.2f}".format(item.rate).replace(",", "'") }}</td>
+                <td style="text-align: right;">{% if item.stock_uom != item.uom %}
+                    {{ item.stock_qty }}{{ _(" Einheit/en") }} {#{ item.uom }#} {{ _("zu") }} {{ item.conversion_factor }} {{ item.stock_uom }}
+                    {% else %}
+                    {{ item.stock_qty }}{{ item.stock_uom }}
+                    {% endif %}</td>
+                <td>
+                    <input id="{{ item.item_code }}-qty" type="number" class="form-control order_amount" data-rate="{{ item.rate }}" 
+                         data-itemcode="{{ item.item_code }}" value="{{ item.qty|int }}" min="0" onchange="calc_total(event)"></input>
+                </td>
+                <td style="text-align: right;" id="{{ item.item_code }}-total" class="total-td">{{ "{:,.2f}".format(item.qty * item.rate).replace(",", "'") }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    <tr>
+        <td style="border-top: 1px solid black;"><b>{{ _("Totalsum") }}</b></td>
+        <td id="totalsum" style="border-top: 1px solid black; text-align: right; font-weight: bold;">0.00</td>
+    </tr>
+</table>
+{% endblock %}

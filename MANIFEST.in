@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include bazzell *.css
+recursive-include bazzell *.csv
+recursive-include bazzell *.html
+recursive-include bazzell *.ico
+recursive-include bazzell *.js
+recursive-include bazzell *.json
+recursive-include bazzell *.md
+recursive-include bazzell *.png
+recursive-include bazzell *.py
+recursive-include bazzell *.svg
+recursive-include bazzell *.txt
+recursive-exclude bazzell *.pyc
