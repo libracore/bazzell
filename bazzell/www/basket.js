@@ -5,7 +5,7 @@ function calc_total(event) {
     var total = parseFloat(qty) * parseFloat(rate);
     var item_code = input.attr('data-itemcode');
     $("#" + item_code + "-total").html(total.toFixed(2));
-    
+    frappe.show_message("Bitte warten...");
     frappe.call({
         'method': 'bazzell.www.basket.change_qtn',
         'args': {
@@ -15,8 +15,11 @@ function calc_total(event) {
         'callback': function(response) {
             if (response.message == 'reload') {
                 location.reload();
+            } else if (response.message == 'qtn deleted') {
+                window.open("/selection", "_self");
             } else {
                 calc_totalsum();
+                frappe.hide_message();
             }
         }
     });

@@ -67,6 +67,9 @@ function calc_total(element) {
 }
 
 function add_to_basket() {
+    
+    frappe.show_message("Please be patient while the page is loading."); 
+    
     var all_items = $(".form-control.order_amount");
     var order_items = [];
     var i;

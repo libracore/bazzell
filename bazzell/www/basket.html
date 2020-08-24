@@ -18,9 +18,9 @@
             <tr>
                 <td>{{ item.item_name }}</td>
                 <td style="text-align: right;">{{ "{:,.2f}".format(item.rate).replace(",", "'") }}</td>
-                <td style="text-align: right;">{% if item.stock_uom != item.uom %}
+                <td style="text-align: right;">{% if item.stock_uom != item.uom[0] %}
                     {{ item.stock_qty }}{{ _(" Einheit/en") }} {#{ item.uom }#} {{ _("zu") }} {{ item.conversion_factor }} {{ item.stock_uom }}
-                    {% else %}
+                {% else %}
                     {{ item.stock_qty }}{{ item.stock_uom }}
                     {% endif %}</td>
                 <td>
