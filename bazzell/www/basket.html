@@ -1,5 +1,6 @@
 {% extends "templates/web.html" %}
 {% block page_content %}
+<div id="main_content">
 <div class="row">
 <div class="col-xs-12">
 <button class="btn btn-sm btn-primary pull-right" style="margin-bottom: 20px;" onclick="order_now();">Order now</button>
@@ -15,13 +16,18 @@
     </tr>
     <tbody id="product_table">
         {% for item in items %}
+            {% if item.stock[0] %}
+                {% set stock_qty = item.stock[0]["actual_qty"] - item.stock[0]["reserved_qty"] %}
+            {% else %}
+                {% set stock_qty = 0 %}
+            {% endif %}
             <tr>
                 <td>{{ item.item_name }}</td>
                 <td style="text-align: right;">{{ "{:,.2f}".format(item.rate).replace(",", "'") }}</td>
                 <td style="text-align: right;">{% if item.stock_uom != item.uom[0] %}
-                    {{ item.stock_qty }}{{ _(" Einheit/en") }} {#{ item.uom }#} {{ _("zu") }} {{ item.conversion_factor }} {{ item.stock_uom }}
+                    {{ stock_qty }}{{ _(" Einheit/en") }} {#{ item.uom }#} {{ _("zu") }} {{ item.stock_uom }} {{ _("Stk") }}
                 {% else %}
-                    {{ item.stock_qty }}{{ item.stock_uom }}
+                    {{ stock_qty }} {{ _("Stk") }}
                     {% endif %}</td>
                 <td>
                     <input id="{{ item.item_code }}-qty" type="number" class="form-control order_amount" data-rate="{{ item.rate }}" 
@@ -36,4 +42,8 @@
         <td id="totalsum" style="border-top: 1px solid black; text-align: right; font-weight: bold;">0.00</td>
     </tr>
 </table>
+</div>
+<div id="info_overlay">
+    <center><i class="fa fa-refresh fa-spin"></i><br>Bitte warten...</center>
+</div>
 {% endblock %}

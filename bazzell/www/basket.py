@@ -7,6 +7,7 @@ import frappe
 from frappe import _
 import json
 from bazzell.www.selection import get_customer, get_stocks
+from erpnext.selling.doctype.quotation.quotation import make_sales_order
 
 no_cache = True
 
@@ -25,35 +26,22 @@ def get_context(context):
 def get_items(customer):
     quotation = frappe.db.sql("""SELECT `name` FROM `tabQuotation` WHERE `party_name` = '{customer}' AND `docstatus` = 0 LIMIT 1""".format(customer=customer), as_dict=True)
     items = frappe.db.sql("""SELECT `qty`, `item_code`, `item_name`, `rate`, `uom`, `stock_uom`, `conversion_factor` FROM `tabQuotation Item` WHERE `parent` = '{quotation}'""".format(quotation=quotation[0].name), as_dict=True)
+    for item in items:
+        item["stock"] = get_stocks(item.item_code)
     return items
     
 def get_currency(customer):
     quotation = frappe.db.sql("""SELECT `currency` FROM `tabQuotation` WHERE `party_name` = '{customer}' AND `docstatus` = 0 LIMIT 1""".format(customer=customer), as_dict=True)
     return quotation[0].currency
 
-#@frappe.whitelist()
-#def oder_now(_items):
-#    _items = json.loads(_items)
-#    
-#    items = []
-#    for item in _items:
-#        item_dict = {
-#            'item_code': item[0],
-#            'qty': item[1]
-#        }
-#        items.append(item_dict)
-#        
-#    customer = get_customer(frappe.session.user).name
-#    
-#    sales order = frappe.get_doc({
-#        "doctype": "Sales Order",
-#        "customer": customer,
-#        "items": items,
-#        "delivery_date": 
-#        })
-#    sales_order.insert()
-#    
-#    return sales_order.name
+@frappe.whitelist()
+def order_now():
+    customer = get_customer(frappe.session.user)
+    _quotation = frappe.db.sql("""SELECT `name` FROM `tabQuotation` WHERE `party_name` = '{customer}' AND `docstatus` = 0 LIMIT 1""".format(customer=customer.name), as_dict=True)[0].name
+    quotation = frappe.get_doc("Quotation", _quotation).submit()
+    sales_order = frappe.get_doc(make_sales_order(_quotation))
+    sales_order.insert()
+    return sales_order
 
 @frappe.whitelist()
 def change_qtn(item_code, qty):

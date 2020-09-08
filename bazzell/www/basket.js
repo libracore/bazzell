@@ -5,7 +5,7 @@ function calc_total(event) {
     var total = parseFloat(qty) * parseFloat(rate);
     var item_code = input.attr('data-itemcode');
     $("#" + item_code + "-total").html(total.toFixed(2));
-    frappe.show_message("Bitte warten...");
+    show_please_wait();
     frappe.call({
         'method': 'bazzell.www.basket.change_qtn',
         'args': {
@@ -35,28 +35,20 @@ function calc_totalsum() {
     $("#totalsum").html(sum.toFixed(2));
 }
 calc_totalsum();
-/*
-function order_now() {
-    var order items = $(".form-control.order_items");
-    var ordered_items = [];
-    var i;
-    for (i=0; i <= order_items.length; i++) {
-        var item = $(order_items[i]);
-        if (item.val() > 0) {
-            var list = [];
-            list.push(item.attr("data-itemcode"));
-            list.push(item.val());
-            ordered_items.push(list);
-        }
-    }
 
+function order_now() {
+    show_please_wait();
     frappe.call({
         'method': 'bazzell.www.basket.order_now',
-        'args': {
-            '_items': ordered_items
-        },
         'callback': function(response) {
-            location.href = /api/method/frappe.utils.print_format.download_pdf?doctype=Sales Order&name=;     //show pdf
+            if (response.message) {
+                window.open("/selection", "_self");
+            }
         }
     });
-}*/
+}
+
+function show_please_wait() {
+    $("#info_overlay").css("display", "block");
+    $("#main_content").css("display", "none");
+}
