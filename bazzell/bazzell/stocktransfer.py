@@ -7,13 +7,14 @@ import frappe
 from frappe import _
 from erpnext.stock.doctype.stock_entry.stock_entry import make_stock_in_entry
 
-def repack_to_single_uom():
+def repack_to_single_uom(debug=False):
     # get settings
     settings = frappe.get_doc("Bazzell Settings", "Bazzell Settings")
     if not settings.warehouse_for_repacks:
         frappe.throw("Target warehouse for repack not configured. Please configure this in Bazzell Settings")
 
-    print("starting stock relocation...")
+    if debug:
+        print("starting stock relocation...")
     # get templates
     query_templates_in_stock = """SELECT `tabItem`.`variant_of`
         FROM `tabItem` 
@@ -22,7 +23,8 @@ def repack_to_single_uom():
         GROUP BY `variant_of`;""".format(warehouse=settings.warehouse_for_repacks)
     
     templates_in_stock = frappe.db.sql(query_templates_in_stock, as_dict=True)
-    print("templates {0}".format(templates_in_stock))
+    if debug:
+        print("templates {0}".format(templates_in_stock))
     
     # loop templates, check for repacking
     for template in templates_in_stock:
@@ -34,11 +36,11 @@ def repack_to_single_uom():
                 `tabItem`.`variant_of`,
                 `tabItem`.`stock_uom`,
                 `tabItem`.`safety_stock`,
-                `tabBin`.`actual_qty`,
+                IFNULL(`tabBin`.`actual_qty`, 0) AS `actual_qty`,
                 `tabUOM`.`value` AS `factor`,
-                `tabBin`.`actual_qty` * `tabUOM`.`value` AS `actual_pcs`
+                IFNULL(`tabBin`.`actual_qty`, 0) * `tabUOM`.`value` AS `actual_pcs`
             FROM `tabItem` 
-            JOIN `tabBin` ON `tabBin`.`item_code` = `tabItem`.`item_code` AND `tabBin`.`warehouse` = '{warehouse}'
+            LEFT JOIN `tabBin` ON `tabBin`.`item_code` = `tabItem`.`item_code` AND `tabBin`.`warehouse` = '{warehouse}'
             JOIN `tabUOM` ON `tabUOM`.`name` = `tabItem`.`stock_uom`
             WHERE `tabItem`.`variant_of` = '{variant_of}'
             ORDER BY `stock_uom` ASC;""".format(variant_of=template['variant_of'], warehouse=settings.warehouse_for_repacks)
@@ -60,8 +62,9 @@ def repack_to_single_uom():
                     # umlagern
                     
                     # quelle ausbuchen
+                    if debug:
                     print("{1}::{0} 1x ausbuchen".format(source_item_details['item_code'], template['variant_of']))
-                    #create material_issue and then material receipt of 1-er
+                    #create material_issue of item with highest amount in stock
                     new_mi = frappe.get_doc({
                         "doctype": "Stock Entry",
                         "stock_entry_type": "Material Issue",
@@ -73,9 +76,16 @@ def repack_to_single_uom():
                             }
                         ],
                     })
-                    new_mi.insert()
-                    #new_mi.submit()
-                    # ziel einbuchen
+                    new_record = new_mi.insert()
+                    if debug:
+                    print("{0}".format(new_record.name))
+                    target_valuation_rate = (new_record.items[0].valuation_rate / source_item_details['factor'])
+                    if debug:
+                    print("Target valuation: {0}".format(target_valuation_rate))
+                    if not debug:
+                    new_mi.submit()
+                    # create material receipt of single product that needs more stock
+                    if debug:
                     print("{2}::{0} {1}x einbuchen".format(single_item_details['item_code'], source_item_details['factor'], template['variant_of']))
                     new_mr = frappe.get_doc({
                         "doctype": "Stock Entry",
@@ -84,39 +94,22 @@ def repack_to_single_uom():
                         "items": [
                             {
                                 "item_code": single_item_details['item_code'],
-                                "qty": source_item_details['factor']
+                                "qty": source_item_details['factor'],
+                                "basic_rate": target_valuation_rate
                             }
                         ],
                     })
                     new_mr.insert()
-                    #new_mr.submit()
+                    if debug:
+                    print("{0}".format(new_mr.name))
+                    if not debug:
+                        new_mr.submit()
                 else:
-                    print("{1}::{0}: kein grösseres Gebinde gefunden".format(single_item_details['item_code'], template['variant_of']))
-            
+                    if debug:
+                    print("{1}::{0}: kein grösseres Gebinde gefunden oder dieses hat keinen Lagerbestand".format(single_item_details['item_code'], template['variant_of']))
         else:
+            if debug:
             print("{1}::{0}: nichts zum umlagern".format(single_item_details['item_code'], template['variant_of']))
-        # list of stock_uom=1 wieso wollen wir alle item_codes? ich möchte nur uom=1
-        target_item_code = single_item_details['item_code']
-        #print("target item {0}".format(target_item_code))
-        # falls ja: ursprung?
-        
-        
-        #create material_issue and then material receipt of 1-er
-        #new_mi = frappe.get_doc({
-        #    "doctype": "Stock Entry",
-        #    "stock_entry_type": "Material Issue",
-        #    "from_warehouse": "Lagerräume - BA",
-        #    "items": [
-        #    {
-        #        "item_code": target_item_code
-        #        "qty": 
-        #    }
-        #],
-        #})
-        #date?
-        #new_mi.insert()
-            
-            
     return
 
 
