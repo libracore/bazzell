@@ -63,7 +63,7 @@ def repack_to_single_uom(debug=False):
                     
                     # quelle ausbuchen
                     if debug:
-                    print("{1}::{0} 1x ausbuchen".format(source_item_details['item_code'], template['variant_of']))
+                        print("{1}::{0} 1x ausbuchen".format(source_item_details['item_code'], template['variant_of']))
                     #create material_issue of item with highest amount in stock
                     new_mi = frappe.get_doc({
                         "doctype": "Stock Entry",
@@ -78,15 +78,15 @@ def repack_to_single_uom(debug=False):
                     })
                     new_record = new_mi.insert()
                     if debug:
-                    print("{0}".format(new_record.name))
+                        print("{0}".format(new_record.name))
                     target_valuation_rate = (new_record.items[0].valuation_rate / source_item_details['factor'])
                     if debug:
-                    print("Target valuation: {0}".format(target_valuation_rate))
+                        print("Target valuation: {0}".format(target_valuation_rate))
                     if not debug:
-                    new_mi.submit()
+                        new_mi.submit()
                     # create material receipt of single product that needs more stock
                     if debug:
-                    print("{2}::{0} {1}x einbuchen".format(single_item_details['item_code'], source_item_details['factor'], template['variant_of']))
+                       print("{2}::{0} {1}x einbuchen".format(single_item_details['item_code'], source_item_details['factor'], template['variant_of']))
                     new_mr = frappe.get_doc({
                         "doctype": "Stock Entry",
                         "stock_entry_type": "Material Receipt",
@@ -101,15 +101,15 @@ def repack_to_single_uom(debug=False):
                     })
                     new_mr.insert()
                     if debug:
-                    print("{0}".format(new_mr.name))
+                        print("{0}".format(new_mr.name))
                     if not debug:
                         new_mr.submit()
                 else:
                     if debug:
-                    print("{1}::{0}: kein grösseres Gebinde gefunden oder dieses hat keinen Lagerbestand".format(single_item_details['item_code'], template['variant_of']))
+                        print("{1}::{0}: kein grösseres Gebinde gefunden oder dieses hat keinen Lagerbestand".format(single_item_details['item_code'], template['variant_of']))
         else:
             if debug:
-            print("{1}::{0}: nichts zum umlagern".format(single_item_details['item_code'], template['variant_of']))
+                print("{1}::{0}: nichts zum umlagern".format(single_item_details['item_code'], template['variant_of']))
     return
 
 
