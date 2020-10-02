@@ -34,7 +34,9 @@ def get_context(context):
                                                     `stock_uom`
                                             FROM `tabItem`
                                             WHERE `disabled` = 0
-                                            AND `has_variants` = 0""", as_dict=True)
+                                            AND `has_variants` = 0
+                                            AND `item_group` IN (
+                                            SELECT `name` FROM `tabItem Group` WHERE `show_in_b2b_shop` = 1)""", as_dict=True)
     
     #table                                        
     for item in items_without_categories:
@@ -60,6 +62,12 @@ def get_context(context):
             rate_and_currency = frappe.db.sql("""SELECT `price_list_rate` AS `rate`, `currency` FROM `tabItem Price` WHERE `price_list` = '{price_list}' AND `item_code` = '{item_code}'""".format(price_list=price_list, item_code=item.item_code), as_dict=True)[0]
             item["currency"] = rate_and_currency.currency
             item["rate"] = rate_and_currency.rate
+            
+            if price_list != 'Standard-Vertrieb':
+                rate_and_currency = frappe.db.sql("""SELECT `price_list_rate` AS `rate`, `currency` FROM `tabItem Price` WHERE `price_list` = 'Standard-Vertrieb' AND `item_code` = '{item_code}'""".format(item_code=item.item_code), as_dict=True)[0]
+                item["default_currency"] = rate_and_currency.currency
+                item["default_rate"] = rate_and_currency.rate
+                
         except:
             item["currency"] = 'CHF'
             item["rate"] = 'N/A'
