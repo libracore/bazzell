@@ -92,7 +92,8 @@ app_license = "MIT"
 
 scheduler_events = {
 	"daily": [
-		"bazzell.utils.set_sync_qty_to_woocommerce"
+		"bazzell.utils.set_sync_qty_to_woocommerce",
+		"bazzell.utils.set_item_description_equals_to_stock_uom"
 	]
 }
 
