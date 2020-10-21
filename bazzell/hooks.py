@@ -90,23 +90,11 @@ app_license = "MIT"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"bazzell.tasks.all"
-# 	],
-# 	"daily": [
-# 		"bazzell.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"bazzell.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"bazzell.tasks.weekly"
-# 	]
-# 	"monthly": [
-# 		"bazzell.tasks.monthly"
-# 	]
-# }
+scheduler_events = {
+	"daily": [
+		"bazzell.utils.set_sync_qty_to_woocommerce"
+	]
+}
 
 # Testing
 # -------
