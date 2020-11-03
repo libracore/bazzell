@@ -16,12 +16,13 @@ def get_context(context):
     #get customer
     customer = get_customer(frappe.session.user)
     
-    #get pricelist
-    if customer.default_price_list:
-        price_list = customer.default_price_list
-    else:
-        price_list = 'Standard-Vertrieb'
+   price_list = 'WooCommerce Listpreise'
     context["price_list"] = price_list
+    
+    # pre check for price rule
+    price_rules = frappe.db.sql("""SELECT `name` FROM `tabPricing Rule` WHERE `applicable_for` = 'Customer Group' AND `customer_group` = '{customer_group}' AND `selling` = 1 AND `apply_on` = 'Brand' AND `for_price_list` = 'WooCommerce Listpreise'""".format(customer_group=customer.customer_group), as_list=True)
+    if len(price_rules) < 1:
+        price_rules = False
     
     
     #filter
@@ -31,7 +32,8 @@ def get_context(context):
     context["item_table"] = []
     items_without_categories = frappe.db.sql("""SELECT `item_code`,
                                                     `item_name`,
-                                                    `stock_uom`
+                                                    `stock_uom`,
+                                                    `brand`
                                             FROM `tabItem`
                                             WHERE `disabled` = 0
                                             AND `has_variants` = 0
@@ -50,6 +52,8 @@ def get_context(context):
             product_categories = []
         item["categories"] = product_categories
         
+        brand_for_pricing_rule = item["brand"]
+        
         #brand
         try:
             brand = frappe.db.sql("""SELECT `attribute_value` FROM `tabItem Variant Attribute` WHERE `attribute` LIKE '%Marke%' AND `parent` = '{item_code}'""".format(item_code=item.item_code), as_list=True)[0][0]
@@ -62,11 +66,30 @@ def get_context(context):
             rate_and_currency = frappe.db.sql("""SELECT `price_list_rate` AS `rate`, `currency` FROM `tabItem Price` WHERE `price_list` = '{price_list}' AND `item_code` = '{item_code}'""".format(price_list=price_list, item_code=item.item_code), as_dict=True)[0]
             item["currency"] = rate_and_currency.currency
             item["rate"] = rate_and_currency.rate
+            item["default_rate"] = 0.00
             
-            if price_list != 'Standard-Vertrieb':
-                rate_and_currency = frappe.db.sql("""SELECT `price_list_rate` AS `rate`, `currency` FROM `tabItem Price` WHERE `price_list` = 'Standard-Vertrieb' AND `item_code` = '{item_code}'""".format(item_code=item.item_code), as_dict=True)[0]
-                item["default_currency"] = rate_and_currency.currency
-                item["default_rate"] = rate_and_currency.rate
+            #check for price rule
+            if price_rules:
+                affected_rules = frappe.db.sql("""SELECT DISTINCT `parent`
+                                                    FROM `tabPricing Rule Brand`
+                                                    WHERE `brand` = '{item_brand}'
+                                                    AND `parent` IN
+                                                    (SELECT `name`
+                                                        FROM `tabPricing Rule`
+                                                        WHERE `applicable_for` = 'Customer Group'
+                                                        AND `customer_group` = '{customer_group}'
+                                                        AND `selling` = 1
+                                                        AND `apply_on` = 'Brand')
+                                                    ORDER BY `modified_by` ASC""".format(item_brand=brand_for_pricing_rule, customer_group=customer.customer_group), as_list=True)
+                if len(affected_rules) == 1:
+                    item["default_rate"] = item["rate"]
+                    pricing_rule = frappe.get_doc("Pricing Rule", affected_rules[0][0])
+                    if pricing_rule.rate_or_discount == 'Rate':
+                        item["rate"] = pricing_rule.rate
+                    elif pricing_rule.rate_or_discount == 'Discount Percentage':
+                        item["rate"] = (item["rate"] / 100) * (100 - pricing_rule.discount_percentage)
+                    elif pricing_rule.rate_or_discount == 'Discount Amount':
+                        item["rate"] = item["rate"] - pricing_rule.discount_amount
                 
         except:
             item["currency"] = 'CHF'
@@ -151,7 +174,7 @@ def add_to_basket(_items):
             "doctype": "Quotation",
             "party_name": customer,
             "items": items,
-            "order_type": _("Shopping Cart")
+            "order_type": "Shopping Cart"
             })
         quotation.insert()
     

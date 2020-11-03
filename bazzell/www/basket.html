@@ -25,7 +25,7 @@
                 <td>{{ item.item_name }}</td>
                 <td style="text-align: right;">{{ "{:,.2f}".format(item.rate).replace(",", "'") }}</td>
                 <td style="text-align: right;">{% if item.stock_uom != item.uom[0] %}
-                    {{ stock_qty }}{{ _(" Einheit/en") }} {#{ item.uom }#} {{ _("zu") }} {{ item.stock_uom }} {{ _("Stk") }}
+                    {{ stock_qty }}{{ _(" Einheit/en") }} {#{ item.uom }#} {{ _("zu") }} {{ item.stock_uom |replace("B", "")}} {{ _("Stk") }}
                 {% else %}
                     {{ stock_qty }} {{ _("Stk") }}
                     {% endif %}</td>

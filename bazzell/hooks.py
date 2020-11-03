@@ -39,11 +39,15 @@ app_license = "MIT"
 
 # website user home page (by Role)
 # role_home_page = {
-#	"Role": "home_page"
+#   "Role": "home_page"
 # }
 
 # Website user home page (by function)
 # get_website_user_home_page = "bazzell.utils.get_home_page"
+
+website_route_rules = [
+    {"from_route": "/me", "to_route": "selection"}
+]
 
 # Generators
 # ----------
@@ -68,11 +72,11 @@ app_license = "MIT"
 # Permissions evaluated in scripted ways
 
 # permission_query_conditions = {
-# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
+#   "Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
 # }
 #
 # has_permission = {
-# 	"Event": "frappe.desk.doctype.event.event.has_permission",
+#   "Event": "frappe.desk.doctype.event.event.has_permission",
 # }
 
 # Document Events
@@ -80,21 +84,21 @@ app_license = "MIT"
 # Hook on document methods and events
 
 # doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-#	}
+#   "*": {
+#       "on_update": "method",
+#       "on_cancel": "method",
+#       "on_trash": "method"
+#   }
 # }
 
 # Scheduled Tasks
 # ---------------
 
 scheduler_events = {
-	"daily": [
-		"bazzell.utils.set_sync_qty_to_woocommerce",
-		"bazzell.utils.set_item_description_equals_to_stock_uom"
-	]
+    "daily": [
+        "bazzell.utils.set_sync_qty_to_woocommerce",
+        "bazzell.utils.set_item_description_equals_to_stock_uom"
+    ]
 }
 
 # Testing
@@ -106,13 +110,13 @@ scheduler_events = {
 # ------------------------------
 #
 # override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "bazzell.event.get_events"
+#   "frappe.desk.doctype.event.event.get_events": "bazzell.event.get_events"
 # }
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
 # along with any modifications made in other Frappe apps
 # override_doctype_dashboards = {
-# 	"Task": "bazzell.task.get_dashboard_data"
+#   "Task": "bazzell.task.get_dashboard_data"
 # }
 
