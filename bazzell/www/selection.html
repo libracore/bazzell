@@ -54,8 +54,8 @@
                 <td>{{ item.item_name }}</td>
                 <td style="text-align: center;">{{ item.currency }}</td>
                 <td style="text-align: right;">
-                    {% if item.default_rate|int > 0 %}{{ "{:,.2f}".format(item.default_rate).replace(",", "'") }} / {% endif %}
-                    {% if item.rate != 'N/A' %}{% if item.default_rate|int > 0 %}<b>{% endif %}{{ "{:,.2f}".format(item.rate).replace(",", "'") }}{% if item.default_rate|int > 0 %}</b>{% endif %}{% else %}N/A{% endif %}
+                    {% if item.default_rate|int > 0 %}{{ "{:,.2f}".format((item.default_rate * 1.077)).replace(",", "'") }} / {% endif %}
+                    {% if item.rate != 'N/A' %}{% if item.default_rate|int > 0 %}<b>{% endif %}{{ "{:,.2f}".format((item.rate * 1.077)).replace(",", "'") }}{% if item.default_rate|int > 0 %}</b>{% endif %}{% else %}N/A{% endif %}
                     </td>
                 <td style="text-align: center;">
                     {% if item.stock_uom != item.uom %}

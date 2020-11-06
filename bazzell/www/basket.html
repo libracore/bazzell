@@ -23,7 +23,7 @@
             {% endif %}
             <tr>
                 <td>{{ item.item_name }}</td>
-                <td style="text-align: right;">{{ "{:,.2f}".format(item.rate).replace(",", "'") }}</td>
+                <td style="text-align: right;">{{ "{:,.2f}".format((item.rate * 1.077)).replace(",", "'") }}</td>
                 <td style="text-align: right;">{% if item.stock_uom != item.uom[0] %}
                     {{ stock_qty }}{{ _(" Einheit/en") }} {#{ item.uom }#} {{ _("zu") }} {{ item.stock_uom |replace("B", "")}} {{ _("Stk") }}
                 {% else %}
@@ -33,7 +33,7 @@
                     <input id="{{ item.item_code }}-qty" type="number" class="form-control order_amount" data-rate="{{ item.rate }}" 
                          data-itemcode="{{ item.item_code }}" value="{{ item.qty|int }}" min="0" onchange="calc_total(event)"></input>
                 </td>
-                <td style="text-align: right;" id="{{ item.item_code }}-total" class="total-td">{{ "{:,.2f}".format(item.qty * item.rate).replace(",", "'") }}</td>
+                <td style="text-align: right;" id="{{ item.item_code }}-total" class="total-td">{{ "{:,.2f}".format((item.qty * item.rate) * 1.077).replace(",", "'") }}</td>
             </tr>
         {% endfor %}
     </tbody>
@@ -45,5 +45,8 @@
 </div>
 <div id="info_overlay">
     <center><i class="fa fa-refresh fa-spin"></i><br>Bitte warten...</center>
+</div>
+<div id="info_overlay_ordered">
+    <center><i class="fa fa-refresh fa-spin"></i><br>Vielen Dank für Ihre Bestellung, sie wird umgehend bearbeitet.</center>
 </div>
 {% endblock %}

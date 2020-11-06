@@ -37,7 +37,7 @@ function calc_totalsum() {
 calc_totalsum();
 
 function order_now() {
-    show_please_wait();
+    show_order_complete();
     frappe.call({
         'method': 'bazzell.www.basket.order_now',
         'callback': function(response) {
@@ -50,5 +50,10 @@ function order_now() {
 
 function show_please_wait() {
     $("#info_overlay").css("display", "block");
+    $("#main_content").css("display", "none");
+}
+
+function show_order_complete() {
+    $("#info_overlay_ordered").css("display", "block");
     $("#main_content").css("display", "none");
 }

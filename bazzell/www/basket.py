@@ -40,7 +40,7 @@ def order_now():
     _quotation = frappe.db.sql("""SELECT `name` FROM `tabQuotation` WHERE `party_name` = '{customer}' AND `docstatus` = 0 LIMIT 1""".format(customer=customer.name), as_dict=True)[0].name
     quotation = frappe.get_doc("Quotation", _quotation).submit()
     sales_order = frappe.get_doc(make_sales_order(_quotation))
-    sales_order.insert()
+    sales_order.insert(ignore_permissions=True)
     return sales_order
 
 @frappe.whitelist()
@@ -54,7 +54,7 @@ def change_qtn(item_code, qty):
             if item.item_code == item_code:
                 new_amount = item.rate * int(qty)
                 frappe.db.sql("""UPDATE `tabQuotation Item` SET `qty` = '{qty}', `amount` = '{new_amount}' WHERE `name` = '{name}' AND `parent` = '{qtn}'""".format(qty=qty, name=item.name, new_amount=new_amount, qtn=quotation[0].name), as_list=True)
-        quotation = frappe.get_doc("Quotation", quotation[0].name).save()
+        quotation = frappe.get_doc("Quotation", quotation[0].name).save(ignore_permissions=True)
         return 'changed'
     else:
         for item in items:
@@ -62,7 +62,7 @@ def change_qtn(item_code, qty):
                 frappe.db.sql("""DELETE FROM `tabQuotation Item` WHERE `name` = '{name}'""".format(name=item.name), as_list=True)
         check_qtn_qty = frappe.db.sql("""SELECT COUNT(`name`) FROM `tabQuotation Item` WHERE `parent` = '{qtn}'""".format(qtn=quotation[0].name), as_list=True)[0][0]
         if check_qtn_qty > 0:
-            quotation = frappe.get_doc("Quotation", quotation[0].name).save()
+            quotation = frappe.get_doc("Quotation", quotation[0].name).save(ignore_permissions=True)
         else:
             quotation = frappe.get_doc("Quotation", quotation[0].name).delete()
             return 'qtn deleted'

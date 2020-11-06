@@ -158,7 +158,7 @@ def add_to_basket(_items):
                 row = quotation.append('items', {})
                 row.item_code = item["item_code"]
                 row.qty = item["qty"]
-                quotation.save()
+                quotation.save(ignore_permissions=True)
                 frappe.db.commit()
         
     else:    
@@ -176,7 +176,7 @@ def add_to_basket(_items):
             "items": items,
             "order_type": "Shopping Cart"
             })
-        quotation.insert()
+        quotation.insert(ignore_permissions=True)
     
     return quotation.name
     

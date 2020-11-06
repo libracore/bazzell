@@ -1,3 +1,7 @@
 #info_overlay {
     display: none;
 }
+
+#info_overlay_ordered {
+    display: none;
+}
