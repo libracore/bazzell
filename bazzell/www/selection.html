@@ -64,7 +64,7 @@
                     {{ item.stock_qty }}{{ _("Stk") }}
                     {% endif %}</td>
                 <td>
-                    <input id="{{ item.item_code }}-qty" type="number" class="form-control order_amount" data-rate="{{ item.rate }}" data-itemcode="{{ item.item_code }}" defaultValue="0" min="0" onchange="calc_total('{{ item.item_code }}-qty');"></input>
+                    <input id="{{ item.item_code }}-qty" type="number" class="form-control order_amount" data-rate="{{ (item.rate|int *1.077) }}" data-itemcode="{{ item.item_code }}" defaultValue="0" min="0" onchange="calc_total('{{ item.item_code }}-qty');"></input>
                 </td>
                 <td id="{{ item.item_code }}-total" style="text-align: right;">0.00</td>
             </tr>
