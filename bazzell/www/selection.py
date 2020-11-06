@@ -16,7 +16,7 @@ def get_context(context):
     #get customer
     customer = get_customer(frappe.session.user)
     
-   price_list = 'WooCommerce Listpreise'
+    price_list = 'WooCommerce Listpreise'
     context["price_list"] = price_list
     
     # pre check for price rule
