@@ -26,13 +26,25 @@ function calc_total(event) {
 }
 
 function calc_totalsum() {
-    var totalTds = $("#product_table td.total-td");
+    /* var totalTds = $("#product_table td.total-td");
     var sum = 0;
     for (var i = 0; i < totalTds.length; i++) {
         var td = $(totalTds[i]);
         sum += Number.isNaN(td.html()) ? 0 : parseFloat(td.html());
     }
-    $("#totalsum").html(sum.toFixed(2));
+    $("#totalsum").html(sum.toFixed(2)); */
+	
+	frappe.call({
+        'method': 'bazzell.www.basket.get_totals',
+        'callback': function(response) {
+            var totals = response.message;
+			if (totals) {
+                $("#totel_excl_mwst").html(totals.total.toFixed(2));
+				$("#total_mwst").html(totals.tax.toFixed(2));
+				$("#totalsum").html(totals.grand_total.toFixed(2));
+            }
+        }
+    });
 }
 calc_totalsum();
 

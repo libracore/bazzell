@@ -41,7 +41,7 @@
         <th>{{ _("Product<br>Category") }}</th>
         <th>{{ _("Brand") }}</th>
         <th>{{ _("Item Name") }}</th>
-        <th colspan="2">{{ _("Price") }}</th>
+        <th colspan="2">{{ _("Price excl. VAT") }}</th>
         <th>{{ _("In Stock") }}</th>
         <th style="width: 70px;">{{ _("Order") }}</th>
         <th>{{ _("Total") }}</th>
@@ -54,8 +54,8 @@
                 <td>{{ item.item_name }}</td>
                 <td style="text-align: center;">{{ item.currency }}</td>
                 <td style="text-align: right;">
-                    {% if item.default_rate|int > 0 %}{{ "{:,.2f}".format((item.default_rate * 1.077)).replace(",", "'") }} / {% endif %}
-                    {% if item.rate != 'N/A' %}{% if item.default_rate|int > 0 %}<b>{% endif %}{{ "{:,.2f}".format((item.rate * 1.077)).replace(",", "'") }}{% if item.default_rate|int > 0 %}</b>{% endif %}{% else %}N/A{% endif %}
+                    {% if item.default_rate|int > 0 %}{{ "{:,.2f}".format(item.default_rate).replace(",", "'") }} / {% endif %}
+                    {% if item.rate != 'N/A' %}{% if item.default_rate|int > 0 %}<b>{% endif %}{{ "{:,.2f}".format(item.rate).replace(",", "'") }}{% if item.default_rate|int > 0 %}</b>{% endif %}{% else %}N/A{% endif %}
                     </td>
                 <td style="text-align: center;">
                     {% if item.stock_uom != item.uom %}
@@ -64,7 +64,7 @@
                     {{ item.stock_qty }}{{ _("Stk") }}
                     {% endif %}</td>
                 <td>
-                    <input id="{{ item.item_code }}-qty" type="number" class="form-control order_amount" data-rate="{{ (item.rate|int *1.077) }}" data-itemcode="{{ item.item_code }}" defaultValue="0" min="0" onchange="calc_total('{{ item.item_code }}-qty');"></input>
+                    <input id="{{ item.item_code }}-qty" type="number" class="form-control order_amount" data-rate="{{ item.rate }}" data-itemcode="{{ item.item_code }}" defaultValue="0" min="0" onchange="calc_total('{{ item.item_code }}-qty');"></input>
                 </td>
                 <td id="{{ item.item_code }}-total" style="text-align: right;">0.00</td>
             </tr>

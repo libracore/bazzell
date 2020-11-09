@@ -67,3 +67,15 @@ def change_qtn(item_code, qty):
             quotation = frappe.get_doc("Quotation", quotation[0].name).delete()
             return 'qtn deleted'
         return 'reload'
+
+@frappe.whitelist()
+def get_totals():
+    customer = get_customer(frappe.session.user)
+    quotation = frappe.db.sql("""SELECT `name` FROM `tabQuotation` WHERE `party_name` = '{customer}' AND `docstatus` = 0 LIMIT 1""".format(customer=customer.name), as_dict=True)
+    quotation = frappe.get_doc("Quotation", quotation[0].name)
+    
+    return {
+        'total': quotation.total,
+        'tax': quotation.total_taxes_and_charges,
+        'grand_total': quotation.grand_total
+    }

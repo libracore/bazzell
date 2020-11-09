@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe import _
 import json
+from erpnext.controllers.accounts_controller import get_taxes_and_charges
 
 no_cache = True
 
@@ -174,7 +175,10 @@ def add_to_basket(_items):
             "doctype": "Quotation",
             "party_name": customer,
             "items": items,
-            "order_type": "Shopping Cart"
+            "order_type": "Shopping Cart",
+			"selling_price_list": "WooCommerce Listpreise",
+			"taxes_and_charges": "Gemischte MWST Warenverkauf (302)",
+			"taxes": get_taxes_and_charges(master_doctype='Sales Taxes and Charges Template', master_name='Gemischte MWST Warenverkauf (302)')
             })
         quotation.insert(ignore_permissions=True)
     
@@ -188,3 +192,4 @@ def get_stocks(item_code):
             'actual_qty': ['!=', 0],
         })
     return stocks
+
