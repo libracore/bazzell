@@ -5,7 +5,7 @@ function calc_total(event) {
     var total = parseFloat(qty) * parseFloat(rate);
     var item_code = input.attr('data-itemcode');
     $("#" + item_code + "-total").html(total.toFixed(2));
-    show_please_wait();
+	show_please_wait();
     frappe.call({
         'method': 'bazzell.www.basket.change_qtn',
         'args': {
@@ -16,10 +16,10 @@ function calc_total(event) {
             if (response.message == 'reload') {
                 location.reload();
             } else if (response.message == 'qtn deleted') {
-                window.open("/selection", "_self");
+				window.open("/selection", "_self");
             } else {
                 calc_totalsum();
-                frappe.hide_message();
+				hide_please_wait();
             }
         }
     });
@@ -49,8 +49,13 @@ function order_now() {
 }
 
 function show_please_wait() {
-    $("#info_overlay").css("display", "block");
     $("#main_content").css("display", "none");
+    $("#info_overlay").css("display", "block");
+}
+
+function hide_please_wait() {
+    $("#info_overlay").css("display", "none");
+    $("#main_content").css("display", "block");
 }
 
 function show_order_complete() {
