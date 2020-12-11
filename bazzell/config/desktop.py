@@ -7,7 +7,7 @@ def get_data():
 		{
 			"module_name": "bazzell",
 			"color": "grey",
-			"icon": "default",
+			"icon": "icon cube-blue",
 			"type": "module",
 			"label": _("bazzell")
 		}
