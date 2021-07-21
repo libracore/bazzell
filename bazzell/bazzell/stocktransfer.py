@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020, libracore.com and Contributors
+# Copyright (c) 2020-2021, libracore.com and Contributors
 # MIT License. See license.txt
 
 from __future__ import unicode_literals
@@ -10,6 +10,8 @@ from erpnext.stock.doctype.stock_entry.stock_entry import make_stock_in_entry
 def repack_to_single_uom(debug=False):
     # get settings
     settings = frappe.get_doc("Bazzell Settings", "Bazzell Settings")
+    company = frappe.defaults.get_global_default("company") 
+    stock_difference_account = frappe.get_value("Company", company, "stock_adjustment_account")
     if not settings.warehouse_for_repacks:
         frappe.throw("Target warehouse for repack not configured. Please configure this in Bazzell Settings")
 
@@ -72,7 +74,8 @@ def repack_to_single_uom(debug=False):
                         "items": [
                             {
                                 "item_code": source_item_details['item_code'],
-                                "qty": 1
+                                "qty": 1,
+                                "expense_account": stock_difference_account
                             }
                         ],
                     })
@@ -95,7 +98,8 @@ def repack_to_single_uom(debug=False):
                             {
                                 "item_code": single_item_details['item_code'],
                                 "qty": source_item_details['factor'],
-                                "basic_rate": target_valuation_rate
+                                "basic_rate": target_valuation_rate,
+                                "expense_account": stock_difference_account
                             }
                         ],
                     })
