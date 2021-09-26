@@ -12,7 +12,8 @@ def set_sync_qty_to_woocommerce():
 def set_item_description_equals_to_stock_uom():
     woocommerce_items = frappe.db.sql("""SELECT `item_code`, `stock_uom` FROM `tabItem` WHERE `item_group` = 'WooCommerceItem' AND `has_variants` = 0""", as_dict=True)
     for woocommerce_item in woocommerce_items:
-        frappe.db.sql("""UPDATE `tabItem` SET `description` = '{new_description}' WHERE `item_code` = '{item_code}'""".format(new_description=woocommerce_item.stock_uom, item_code=wooc$
+        frappe.db.sql("""UPDATE `tabItem` SET `description` = '{new_description}' WHERE `item_code` = '{item_code}'""".format(
+            new_description=woocommerce_item.stock_uom, item_code=wooc$
 
 @frappe.whitelist()
 def get_stock_items(warehouse):
@@ -23,4 +24,3 @@ def get_stock_items(warehouse):
         ORDER BY `tabItem`.`item_name` ASC;""".format(warehouse=warehouse)
     data = frappe.db.sql(sql_query, as_dict=True)
     return data
-                                                                                                                              
