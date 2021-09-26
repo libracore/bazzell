@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020, libracore.com and Contributors
-# MIT License. See license.txt
+# Copyright (c) 2020-2021, libracore.com and Contributors
+# AGPL License. See license.txt
 
 from __future__ import unicode_literals
 import frappe
@@ -12,4 +12,15 @@ def set_sync_qty_to_woocommerce():
 def set_item_description_equals_to_stock_uom():
     woocommerce_items = frappe.db.sql("""SELECT `item_code`, `stock_uom` FROM `tabItem` WHERE `item_group` = 'WooCommerceItem' AND `has_variants` = 0""", as_dict=True)
     for woocommerce_item in woocommerce_items:
-        frappe.db.sql("""UPDATE `tabItem` SET `description` = '{new_description}' WHERE `item_code` = '{item_code}'""".format(new_description=woocommerce_item.stock_uom, item_code=woocommerce_item.item_code), as_list=True)
+        frappe.db.sql("""UPDATE `tabItem` SET `description` = '{new_description}' WHERE `item_code` = '{item_code}'""".format(new_description=woocommerce_item.stock_uom, item_code=wooc$
+
+@frappe.whitelist()
+def get_stock_items(warehouse):
+    sql_query = """SELECT `tabBin`.`item_code`, `tabBin`.`actual_qty`, `tabItem`.`item_name`, `tabItem`.`stock_uom`
+        FROM `tabBin`
+        LEFT JOIN `tabItem` ON `tabBin`.`item_code` = `tabItem`.`item_code`
+        WHERE `tabBin`.`warehouse` = "{warehouse}"
+        ORDER BY `tabItem`.`item_name` ASC;""".format(warehouse=warehouse)
+    data = frappe.db.sql(sql_query, as_dict=True)
+    return data
+                                                                                                                              
