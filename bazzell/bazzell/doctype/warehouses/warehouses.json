@@ -1,0 +1,30 @@
+{
+ "creation": "2022-04-24 20:34:08.970228",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "warehouse_for_repacks"
+ ],
+ "fields": [
+  {
+   "fieldname": "warehouse_for_repacks",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Warehouse for repacks",
+   "options": "Warehouse",
+   "reqd": 1
+  }
+ ],
+ "istable": 1,
+ "modified": "2022-04-24 20:34:08.970228",
+ "modified_by": "Administrator",
+ "module": "bazzell",
+ "name": "warehouses",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
