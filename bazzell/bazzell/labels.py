@@ -3,13 +3,12 @@
 
 import frappe
 from erpnextswiss.erpnextswiss.doctype.label_printer.label_printer import create_pdf
+from frappe.utils.pdf import get_pdf
 
 @frappe.whitelist()
 def get_planzer_label(shipment, label_printer):
     # get raw data
     doc = frappe.get_doc("Shipment", shipment)
-    # prepare content
-    content = frappe.render_template(template, {'doc': doc})
     # create pdf
     printer = frappe.get_doc("Label Printer", label_printer)
     
@@ -32,9 +31,9 @@ def get_planzer_label(shipment, label_printer):
         'disable-smart-shrinking': ''
     }
     
-    #pdf = get_pdf(html, options)
+    pdf = get_pdf(html, options)
             
-    pdf = create_pdf(printer, html)
+    #pdf = create_pdf(printer, html)
     # return download
     frappe.local.response.filename = "{name}.pdf".format(name=label_printer.replace(" ", "-").replace("/", "-"))
     frappe.local.response.filecontent = pdf
