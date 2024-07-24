@@ -12,20 +12,20 @@
    @media screen {
     .print-format-gutter {
         background-color: #d1d8dd;
-        padding: 30px 0px;
     }
     .print-format {
         background-color: white;
         box-shadow: 0px 0px 9px rgba(0,0,0,0.5);
         max-width: 8.3in;
         min-height: 11.69in;
-        padding: 0.75in;
-        margin: auto;
+        margin-top: 0mm;
+        margin-left: 0mm;
+        margin-right: 0mm;
+        margin-bottom: 0mm;
     }
 
     .print-format.landscape {
         max-width: 11.69in;
-        padding: 0.2in;
     }
 
     .page-break {
@@ -44,12 +44,6 @@
     /* mozilla hack for images in table */
     body:last-child .print-format td img {
         width: 100% !important;
-    }
-
-    @media(max-width: 767px) {
-        .print-format {
-            padding: 0.2in;
-        }
     }
 }
 
@@ -198,7 +192,6 @@ table td div {
     border-bottom: 0px !important;
 }
 
-/* modern format: for-test */
   </style>
  </head>
  <body>

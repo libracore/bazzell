@@ -2,9 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
-#from erpnextswiss.erpnextswiss.doctype.label_printer.label_printer import create_pdf
-#from frappe.utils.pdf import get_pdf
-import pdfkit, os, frappe
+from frappe.utils.pdf import get_pdf
 
 @frappe.whitelist()
 def get_planzer_label(shipment, label_printer):
@@ -28,22 +26,13 @@ def get_planzer_label(shipment, label_printer):
         {'html': html}
     )
     
-    options = {
-        'disable-smart-shrinking': ''
-    }
-    
-    #pdf = get_pdf(html, options)
-            
     pdf = create_pdf(printer, html)
     # return download
     frappe.local.response.filename = "{name}.pdf".format(name=label_printer.replace(" ", "-").replace("/", "-"))
     frappe.local.response.filecontent = pdf
     frappe.local.response.type = "download"
 
-def create_pdf(label_printer, content):
-    # create temporary file
-    fname = os.path.join("/tmp", "frappe-pdf-{0}.pdf".format(frappe.generate_hash()))
-    
+def create_pdf(label_printer, html):
     options = { 
         'page-width': '{0}mm'.format(label_printer.width), 
         'page-height': '{0}mm'.format(label_printer.height), 
@@ -54,16 +43,6 @@ def create_pdf(label_printer, content):
         'disable-smart-shrinking': ''
     }
     
-    pdfkit.from_string(html_content, fname, options=options or {})
-    
-    with open(fname, "rb") as fileobj:
-        filedata = fileobj.read()
-    
-    cleanup(fname)
-    
-    return filedata
+    pdf = get_pdf(html, options)
+    return pdf
 
-def cleanup(fname):
-    if os.path.exists(fname):
-        os.remove(fname)
-    return
