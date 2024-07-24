@@ -8,7 +8,7 @@ from erpnextswiss.erpnextswiss.doctype.label_printer.label_printer import create
 def get_planzer_label(shipment, label_printer):
     # get raw data
     doc = frappe.get_doc("Shipment", shipment)
-    template = frappe.get_value("Print Format", "Planzer Label").html
+    template = frappe.get_value("Print Format", "Planzer Label", "html")
     # prepare content
     content = frappe.render_template(template, {'doc': doc})
     # create pdf
