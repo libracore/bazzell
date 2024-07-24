@@ -8,12 +8,33 @@ from erpnextswiss.erpnextswiss.doctype.label_printer.label_printer import create
 def get_planzer_label(shipment, label_printer):
     # get raw data
     doc = frappe.get_doc("Shipment", shipment)
-    template = frappe.get_value("Print Format", "Planzer Label", "html")
     # prepare content
     content = frappe.render_template(template, {'doc': doc})
     # create pdf
     printer = frappe.get_doc("Label Printer", label_printer)
-    pdf = create_pdf(printer, content)
+    
+    # create pdf
+    html = frappe.render_template(
+        frappe.get_value("Print Format", "Planzer Label", "html"),
+        {
+            'doc': doc.as_dict(),
+            'language': doc.get("language") or "de"
+        }
+    )
+    
+    # need to load the styles and tags
+    html = frappe.render_template(
+        'bazzell/templates/pages/print.html',
+        {'html': html}
+    )
+    
+    options = {
+        'disable-smart-shrinking': ''
+    }
+    
+    #pdf = get_pdf(html, options)
+            
+    pdf = create_pdf(printer, html)
     # return download
     frappe.local.response.filename = "{name}.pdf".format(name=label_printer.replace(" ", "-").replace("/", "-"))
     frappe.local.response.filecontent = pdf
