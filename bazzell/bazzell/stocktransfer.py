@@ -55,7 +55,7 @@ def repack_template(template, warehouse_for_repacks, stock_difference_account, d
         ORDER BY `factor` ASC;""".format(variant_of=template, warehouse=warehouse_for_repacks)
    
     variants_in_stock = frappe.db.sql(query_variant_stock_levels, as_dict=True)
-    frappe.log_error(variants_in_stock, "variants_in_stock")
+    
     #print("variants {0}".format(variants_in_stock))
     single_item_details = variants_in_stock[0]
     # umlagern erforderlich?
