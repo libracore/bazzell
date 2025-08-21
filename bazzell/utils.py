@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021, libracore.com and Contributors
+# Copyright (c) 2020-2025, libracore.com and Contributors
 # AGPL License. See license.txt
 
 from __future__ import unicode_literals
@@ -7,7 +7,15 @@ import frappe
 from frappe import _
 
 def set_sync_qty_to_woocommerce():
-    frappe.db.sql("""UPDATE `tabItem` SET `sync_qty_with_woocommerce` = 1 WHERE `item_group` = 'WooCommerceItem' AND `has_variants` = 0""")
+    frappe.db.sql("""
+        UPDATE `tabItem` 
+        SET `sync_qty_with_woocommerce` = 1 
+        WHERE 
+            `item_group` = 'WooCommerceItem' 
+            AND `has_variants` = 0
+            AND `woocommerce_product_id` IS NOT NULL
+            AND `woocommerce_product_id` != "";
+    """)
 
 def set_item_description_equals_to_stock_uom():
     woocommerce_items = frappe.db.sql("""SELECT `item_code`, `stock_uom` FROM `tabItem` WHERE `item_group` = 'WooCommerceItem' AND `has_variants` = 0""", as_dict=True)
