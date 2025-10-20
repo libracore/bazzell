@@ -14,7 +14,8 @@ def set_sync_qty_to_woocommerce():
             `item_group` = 'WooCommerceItem' 
             AND `has_variants` = 0
             AND `woocommerce_product_id` IS NOT NULL
-            AND `woocommerce_product_id` != "";
+            AND `woocommerce_product_id` != ""
+            AND `is_stock_item` = 1;
     """)
 
 def set_item_description_equals_to_stock_uom():
